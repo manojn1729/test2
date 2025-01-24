@@ -1,0 +1,16 @@
+
+class S3_Wrap:
+    def __init__(self):
+        self.s3=boto3.client('s3')
+
+    def list_buckets(self,Prefix=''):
+        return [bucket['Name'] for bucket in self.s3.list_buckets(Prefix=Prefix)['Buckets']]
+
+    def list_bucket_objects(self,bucket_name,prefix=''):
+        paginator=self.s3.get_paginator('list_objects_v2')
+        pages=paginator.paginate(Bucket=bucket_name,Prefix='')
+        response=[]
+        for page in pages:
+            response.extend([file['Key'] for file in page['Contents']])
+            print(page)
+        return response
